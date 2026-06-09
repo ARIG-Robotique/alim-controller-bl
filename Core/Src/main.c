@@ -18,15 +18,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "adc.h"
 #include "fdcan.h"
 #include "i2c.h"
-#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "app_openbootloader.h"
+#include "openbl_mem.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,7 +57,10 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void System_DeInit(void)
+{
+  HAL_RCC_DeInit();
+}
 /* USER CODE END 0 */
 
 /**
@@ -90,12 +92,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ADC1_Init();
   MX_FDCAN1_Init();
   MX_I2C2_Init();
-  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-
+  OpenBootloader_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,6 +105,13 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    OpenBootloader_ProtocolDetection();
+
+    if (HAL_GetTick() > 10000) {
+      // TODO: Use a constant
+      OPENBL_MEM_JumpToAddress(0x08008000);
+    }
+
   }
   /* USER CODE END 3 */
 }

@@ -18,6 +18,17 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
+include(FetchContent)
+
+# Fetch OpenBootloader Middleware
+FetchContent_Declare(
+    openbootloader
+    GIT_REPOSITORY git@github.com:STMicroelectronics/stm32-mw-openbl.git
+    GIT_TAG v6.1.2
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/ext/openbootloader
+)
+FetchContent_MakeAvailable(openbootloader)
+
 # Set the project name
 set(CMAKE_PROJECT_NAME alim-controller-bl)
 
@@ -45,11 +56,35 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+    ext/openbootloader/Core/openbl_core.c
+    ext/openbootloader/Modules/Mem/openbl_mem.c
+    ext/openbootloader/Modules/I2C/openbl_i2c_cmd.c
+    ext/openbootloader/Interfaces/Patterns/COMMON/common_interface.c
+    ext/openbootloader/Interfaces/Patterns/FLASH/flash_interface.c
+    ext/openbootloader/Interfaces/Patterns/I2C/i2c_interface.c
+    ext/openbootloader/Interfaces/Patterns/IWDG/iwdg_interface.c
+    "ext/openbootloader/Interfaces/Patterns/OPTION BYTES/optionbytes_interface.c"
+    #ext/openbootloader/Interfaces/Patterns/OTP/otp_interface.c
+    ext/openbootloader/Interfaces/Patterns/RAM/ram_interface.c
+    "ext/openbootloader/Interfaces/Patterns/SYSTEM MEMORY/systemmemory_interface.c"
+    OpenBootloader/Src/app_openbootloader.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    ext/openbootloader/Core/
+    ext/openbootloader/Modules/Mem
+    ext/openbootloader/Modules/I2C
+    ext/openbootloader/Interfaces/Patterns/COMMON
+    ext/openbootloader/Interfaces/Patterns/FLASH
+    ext/openbootloader/Interfaces/Patterns/I2C
+    ext/openbootloader/Interfaces/Patterns/IWDG
+    "ext/openbootloader/Interfaces/Patterns/OPTION BYTES"
+    #ext/openbootloader/Interfaces/Patterns/OTP
+    ext/openbootloader/Interfaces/Patterns/RAM
+    "ext/openbootloader/Interfaces/Patterns/SYSTEM MEMORY"
+    OpenBootloader/Inc
 )
 
 # Add project symbols (macros)
